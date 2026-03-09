@@ -2,13 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8a0f3c12-4ac2-4d0e-90ad-00723a0dadcf" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/01_notebooks/01_preprocessing/rshyun24/01_null.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01_notebooks/01_preprocessing/rshyun24/02_numer_mobile_cost.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01_notebooks/01_preprocessing/rshyun24/03_numer_Smart.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01_notebooks/01_preprocessing/rshyun24/04_numer_tab.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01_notebooks/01_preprocessing/rshyun24/05_numer_days.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01_notebooks/01_preprocessing/rshyun24/06_numer_end.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01_notebooks/01_preprocessing/rshyun24/07_contin_mean.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01_notebooks/01_preprocessing/rshyun24/03_numer_Smart.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/01_notebooks/01_preprocessing/rshyun24/03_numer_Smart.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,28 +19,28 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="3AfJIVj5jQAH5EWvmtpHzY2G12B" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "ai.playground.ignore.import.keys.banner.in.settings": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/lecture/twilkka-malkka-ml",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/lecture/twilkka-malkka-ml&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -63,6 +57,7 @@
       <option name="presentableId" value="Default" />
       <updated>1772977614315</updated>
       <workItem from="1772977616013" duration="10585000" />
+      <workItem from="1773014965915" duration="242000" />
     </task>
     <servers />
   </component>
