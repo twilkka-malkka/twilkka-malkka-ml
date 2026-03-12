@@ -9,7 +9,7 @@ def make_trend_chart(monthly_trend: dict) -> go.Figure:
             x=monthly_trend["months"],
             y=monthly_trend["이탈률"],
             mode="lines+markers",
-            name="이탈률(주지표)",
+            name="평균 예측 이탈률",
             line=dict(color="#FF0A16", width=4),
             marker=dict(size=7, color="#FF0A16"),
         )
@@ -18,12 +18,13 @@ def make_trend_chart(monthly_trend: dict) -> go.Figure:
     fig.add_trace(
         go.Scatter(
             x=monthly_trend["months"],
-            y=monthly_trend["시청감소율"],
+            y=monthly_trend["활동도"],
             mode="lines+markers",
-            name="시청감소율(보조지표)",
+            name="평균 최근 시청 횟수",
             line=dict(color="#3B82F6", width=3),
             marker=dict(size=6, color="#3B82F6"),
-            opacity=0.85,
+            opacity=0.9,
+            yaxis="y2",
         )
     )
 
@@ -46,11 +47,22 @@ def make_trend_chart(monthly_trend: dict) -> go.Figure:
         ),
         yaxis=dict(
             title=dict(
-                text="비율(%)",
-                font=dict(color="#D1D5DB"),
+                text="예측 이탈률(%)",
+                font=dict(color="#FFB4B4"),
             ),
             showgrid=True,
             gridcolor="rgba(255,255,255,0.08)",
+            zeroline=False,
+            tickfont=dict(color="#D1D5DB"),
+        ),
+        yaxis2=dict(
+            title=dict(
+                text="최근 시청 횟수",
+                font=dict(color="#A5C8FF"),
+            ),
+            overlaying="y",
+            side="right",
+            showgrid=False,
             zeroline=False,
             tickfont=dict(color="#D1D5DB"),
         ),
@@ -92,10 +104,10 @@ def make_risk_donut(risk_segments: dict) -> go.Figure:
     return fig
 
 
-def make_genre_donut(genres: list[dict]) -> go.Figure:
-    labels = [g["label"] for g in genres]
-    values = [g["value"] for g in genres]
-    colors = ["#E50914", "#8B5CF6", "#3B82F6", "#F59E0B", "#10B981"]
+def make_genre_donut(items: list[dict]) -> go.Figure:
+    labels = [g["label"] for g in items]
+    values = [g["value"] for g in items]
+    colors = ["#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#EF4444"]
 
     fig = go.Figure(
         data=[
