@@ -7,9 +7,9 @@ def init_state() -> None:
         "uploaded_file": None,
         "uploaded_file_name": None,
         "is_sample_mode": False,
-        "selected_risk": ["높은 위험", "중간 위험"],
-        "selected_genres": ["드라마", "영화", "예능"],
-        "selected_period": "최근 3개월",
+        "selected_model_name": "xgboost",
+        "analysis_payload": None,
+        "model_path": r"C:\Users\Playdata\Documents\workspace\twilkka-malkka-ml\01_notebooks\03_models\my_model\model.json",
     }
 
     for key, value in defaults.items():
@@ -29,27 +29,19 @@ def set_uploaded_file(uploaded_file) -> None:
     st.session_state.uploaded_file = uploaded_file
     st.session_state.uploaded_file_name = uploaded_file.name if uploaded_file is not None else None
     st.session_state.is_sample_mode = False
-
-
-def set_sample_mode() -> None:
-    st.session_state.uploaded_file = None
-    st.session_state.uploaded_file_name = "sample_data"
-    st.session_state.is_sample_mode = True
+    st.session_state.analysis_payload = None
 
 
 def clear_uploaded_file() -> None:
     st.session_state.uploaded_file = None
     st.session_state.uploaded_file_name = None
     st.session_state.is_sample_mode = False
+    st.session_state.analysis_payload = None
 
 
-def reset_filters() -> None:
-    st.session_state.selected_risk = ["높은 위험", "중간 위험"]
-    st.session_state.selected_genres = ["드라마", "영화", "예능"]
-    st.session_state.selected_period = "최근 3개월"
+def set_model_name(model_name: str) -> None:
+    st.session_state.selected_model_name = model_name
 
 
-def reset_to_home() -> None:
-    clear_uploaded_file()
-    reset_filters()
-    go_home()
+def set_analysis_payload(payload: dict) -> None:
+    st.session_state.analysis_payload = payload

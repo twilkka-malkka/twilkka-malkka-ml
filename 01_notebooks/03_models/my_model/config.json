@@ -1,0 +1,5 @@
+{
+    "model_type": "XGBClassifier",
+    "save_method": "native_json",
+    "threshold": 0.8
+}
