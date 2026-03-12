@@ -1,0 +1,82 @@
+{
+    "LogisticRegression": {
+        "use_scaler": true,
+        "inverse_target": true,
+        "train_config": {
+            "cv_folds": 5,
+            "scoring":{
+                "recall": "recall",
+                "f1": "f1",
+                "roc_auc": "roc_auc",
+                "pr_auc": "average_precision"
+            },
+            "shuffle": true,
+            "test_size": 0.2,
+            "random_state": 42,
+            "stratify": "y"
+        },
+        "hyperparameters": {
+            "C": 0.01,
+            "class_weight": "balanced",
+            "solver": "liblinear"
+        }
+    },
+    "RandomForest": {
+        "use_scaler": false,
+        "inverse_target": false,
+        "train_config": {
+            "cv_folds": 5,
+            "scoring":  {
+                "precision": "precision",
+                "recall": "recall",
+                "f1": "f1",
+                "roc_auc": "roc_auc",
+                "pr_auc": "average_precision"
+            },
+            "shuffle": true,
+            "test_size": 0.2,
+            "random_state": 42,
+            "stratify": "y"
+        },
+        "hyperparameters": {
+            "n_estimators": 200,
+            "min_samples_split": 5,
+            "min_samples_leaf": 1,
+            "max_features": null,
+            "max_depth": 20,
+            "class_weight": "balanced_subsample",
+            "random_state": 42,
+            "n_jobs": -1
+        }
+    },
+    "XGBoost": {
+        "use_scaler": false,
+        "inverse_target": false,
+        "train_config": {
+            "cv_folds": 5,
+            "scoring":  {
+                "precision": "precision",
+                "recall": "recall",
+                "f1": "f1",
+                "roc_auc": "roc_auc",
+                "pr_auc": "average_precision"
+            },
+            "shuffle": true,
+            "test_size": 0.2,
+            "random_state": 42,
+            "stratify": "y"
+        },
+        "hyperparameters": {
+            "subsample": 0.7,
+            "scale_pos_weight": 0.6108385891146928,
+            "reg_lambda": 10,
+            "reg_alpha": 1,
+            "n_estimators": 300,
+            "min_child_weight": 3,
+            "max_depth": 9,
+            "learning_rate": 0.1,
+            "gamma": 0,
+            "colsample_bytree": 0.9
+        }
+    }
+}
