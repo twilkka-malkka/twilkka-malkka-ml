@@ -6,18 +6,21 @@ from sklearn.preprocessing import StandardScaler
 
 
 class DataProcessor:
-    def __init__(self, config):
+    def __init__(self, config = None):
         self.model_cfg = config
         self.target = "is_active"
 
         # 경로 설정 (ROOT는 utils 등에서 정의한 것을 가져오거나 직접 계산)
-        self.root = Path(__file__).parent.parent.parent
+        self.root = Path(__file__).parents[3]
         self.interim_dir = self.root / "00_data" / "01_interim"
-        self.watch_features_path = self.interim_dir / "watch_features.csv"
+        self.processed_dir = self.root / "00_data" / "02_processed"
+        self.watch_features_path = self.processed_dir / "watch_features.csv"
 
     def _select_columns(self, df):
         user_columns = ['user_id', 'age', 'plan_tier', 'subscription_start_date', 'monthly_spend']
         existing_cols = [c for c in user_columns if c in df.columns]
+        if self.target in df.columns: #학습 or 모델 테스트 데이터인 경우 포함시킴
+            existing_cols.append(self.target)
         return df[existing_cols].copy()
 
     def _clean_age(self, df):
@@ -47,10 +50,9 @@ class DataProcessor:
         return df
 
     def _load_watch_features(self):
-        """기계산된 시청 기록 특징 로드 (없으면 생성 로직 유도 가능)"""
         if not self.watch_features_path.exists():
-            # 여기서 외부 generate 함수를 부르거나 에러를 낼 수 있음
-            raise FileNotFoundError(f"❌ Watch features file not found: {self.watch_features_path}")
+            # 집계한 csv 파일 생성
+            self.generate_and_save_watch_features()
 
         watch_features = pd.read_csv(self.watch_features_path)
 
@@ -63,42 +65,38 @@ class DataProcessor:
 
     # --- [Main Pipeline] ---
 
-    def run_full_pipeline(self, raw_df):
-        """Raw 데이터로부터 최종 모델 입력(X) 제작"""
-
-        # 1. 시청 기록 데이터 및 기준일 로드
-        watch_features, reference_date = self._load_watch_features()
-
-        # 2. 유저 정보 전처리 (Pipe 체이닝 활용)
-        processed_df = (
-            raw_df.pipe(self._select_columns)
+    # user data 전처리
+    def clean_user_data(self, df):
+        return (df.pipe(self._select_columns)
             .pipe(self._clean_age)
             .pipe(self._add_age_group)
-            .pipe(self._fill_monthly_spend_nan)
-            .pipe(self._process_dates, reference_date)
-        )
+            .pipe(self._fill_monthly_spend_nan))
 
-        # 3. 시청 기록 결합 (Merge)
+    def build_features(self, df):
+
+        watch_features, reference_date = self._load_watch_features()
+        df = df.pipe(self._process_dates, reference_date)
+
         watch_cols = [c for c in watch_features.columns if c != 'last_watch_date_ref']
-        inference_data = (
-            processed_df
+        final_df = (
+            df
             .merge(watch_features[watch_cols], on="user_id", how="left")
             .fillna(0)
         )
+        if "days_since_last_watch" in final_df.columns:
+            final_df["days_since_last_watch"] = final_df["days_since_last_watch"].replace(0, 999)
 
-        # 4. 결측값 및 특수 케이스 처리 (예: 시청 기록 없는 유저)
-        if "days_since_last_watch" in inference_data.columns:
-            inference_data["days_since_last_watch"] = inference_data["days_since_last_watch"].replace(0, 999)
+        return final_df
 
-        return inference_data
+    def run_full_pipeline(self, raw_df):
+        """Raw 데이터로부터 최종 모델 입력(X) 제작"""
+        interim_df = self.clean_user_data(raw_df)
+        final_df = self.build_features(interim_df)
+        return final_df
 
     def load_train_data(self, raw_df):
         if 'user_id' in raw_df.columns:
             train_df = raw_df.drop(columns=['user_id'])
-
-        # is_churn을 사용하는 경우
-        #if config["inverse_target"]:
-
         # churn 변수 생성
         train_df['is_churned'] = 1 - train_df['is_active']
         # 기존 변수 제거
@@ -116,5 +114,75 @@ class DataProcessor:
 
         return X_train, X_test, y_train, y_test
 
+    def generate_and_save_watch_features(self):
 
+        raw_path = self.root / "00_data" / "00_raw" / "netflix_watch_history.csv"  # 수정 예정
+        if not raw_path.exists():
+            print(f"Error: {raw_path} not found.")
+            return
 
+        print("Pre-calculating watch features...")
+        history_df = pd.read_csv(raw_path)
+
+        feature_orders =  [
+            "user_id", "watch_count", "unique_movies", "total_watch_time", "avg_watch_time", "watch_days",
+            "recent_watch_count", "days_since_last_watch", "avg_progress",
+            "completion_rate", "download_ratio", "avg_rating"
+        ]
+        # 전처리
+        df = self._process_watch_history(history_df)
+
+        last_date = df['watch_date'].max()
+
+        # 집계
+        basic_stats = self._agg_watch_basic_stats(df)
+        time_stats = self._calculate_watch_time_features(df, last_date)
+
+        watch_features = pd.concat([basic_stats, time_stats], axis = 1).reset_index()
+
+        # 순서 정렬
+        watch_features = watch_features[feature_orders]
+        # 기준 날짜 저장 (나중에 추론 시 tenure 계산용)
+        watch_features['last_watch_date_ref'] = last_date
+
+        watch_features.to_csv(self.watch_features_path, index=False)
+        print(f"Saved pre-calculated features to {self.watch_features_path}")
+
+    def _process_watch_history(self, history_df):
+        df = history_df.copy()
+        df['watch_date'] = pd.to_datetime(history_df['watch_date'], errors='coerce')
+        df["watch_duration_minutes"] = history_df["watch_duration_minutes"].fillna(0)
+        df["progress_percentage"] = history_df["progress_percentage"].fillna(0)
+        df['completed'] = history_df['progress_percentage'] >= 90
+        return df
+
+    def _agg_watch_basic_stats(self, df):
+        basic_stats = df.groupby("user_id").agg(
+            watch_count=("movie_id", "size"),
+            unique_movies=("movie_id", "nunique"),
+            total_watch_time=("watch_duration_minutes", "sum"),
+            avg_watch_time=("watch_duration_minutes", "mean"),
+            watch_days=("watch_date", "nunique"),
+            avg_progress=("progress_percentage", "mean"),
+            completion_rate=("completed", "mean"),
+            download_ratio=("is_download", "mean"),
+            avg_rating=("user_rating", "mean")
+        )
+        return basic_stats
+
+    def _calculate_watch_time_features(self, df, last_date, recent_threshold = 31):
+        recent_cutoff = last_date - pd.Timedelta(days = recent_threshold)
+        recent_count = (
+            df[df["watch_date"] >= recent_cutoff]
+            .groupby("user_id")
+            .size()
+            .rename('recent_watch_count')
+        )
+
+        last_watch = df.groupby("user_id")["watch_date"].max()
+        days_since_last_watch = (last_date - last_watch).dt.days.rename('days_since_last_watch')
+
+        return pd.concat([recent_count, days_since_last_watch], axis = 1)
+
+if __name__ == '__main__':
+    DataProcessor(None).generate_and_save_watch_features()
