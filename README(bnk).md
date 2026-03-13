@@ -58,8 +58,9 @@ project/
 │     ├─ 01_views/               # 페이지 단위 렌더 함수
 │     ├─ 02_state/               # session_state 관리(필터값, 선택값, 캐시 등 상태관리)
 │     └─ 03_viz/                 # 시각화 래퍼(plt/plotly 공통 함수, 스타일 통일)
+│     └─ 04_services/            # 프론트 전용 서비스 로직(업로드 파일 처리, 추론 호출, 화면용 payload 조립)
 │
-├─ 03_scripts/                # 실행 엔트리(정답 실행 경로). 파이프라인을 돌리는 CLI 스크립트
+├─ 03_scripts/                # 배치/CLI 기반 파이프라인 실행 엔트리
 │  ├─ 01_validate_raw.py      # raw CSV 검증/스테이징 실행
 │  ├─ 02_make_dataset.py      # 전처리 파이프라인 실행(raw→interim/processed 생성)
 │  ├─ 03_build_features.py    # 피처 생성 실행(모델 입력 특성 테이블 생성/갱신)
@@ -69,7 +70,7 @@ project/
 ├─ 04_configs/                # 설정 파일(yaml 등). 경로/파라미터/모델 옵션을 코드와 분리
 │
 ├─ 05_artifacts/              # 모델/전처리기/지표 등 "산출물" 저장(대용량이면 git 제외 권장)
-│  ├─ 00_models/                 # 학습된 모델 파일(예: .pkl, .joblib)
+│  ├─ 00_models/                 # 학습된 모델 파일(예: .json, .joblib)
 │  ├─ 01_preprocessors/          # 스케일러/인코더 등 전처리 객체
 │  └─ 02_metrics/                # 평가 지표 결과(리포트, json/csv 등)
 │
