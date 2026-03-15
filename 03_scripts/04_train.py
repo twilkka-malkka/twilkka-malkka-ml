@@ -37,7 +37,10 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def run_model_pipeline(model_name: str, model_config: dict, raw_df: pd.DataFrame):
+def run_model_pipeline(model_name: str, model_config: dict, raw_df: pd.DataFrame) -> None:
+    """
+    모델 학습 및 결과 저장 파이프라인
+    """
     processor = DataProcessor(model_config)
     # user_id 제거
     X_train, X_test, y_train, y_test = processor.load_train_data(raw_df)
@@ -100,15 +103,20 @@ def run_model_pipeline(model_name: str, model_config: dict, raw_df: pd.DataFrame
 def main():
     args = parse_args()
     full_config = load_config('model_config.json')
-    loader = DataLoader()
 
     raw_data_path = ROOT / "00_data" / "02_processed" / args.filename
+    try:
+        raw_df = DataLoader.load_csv(raw_data_path)
+    except FileNotFoundError as e:
+        print(e)
+        sys.exit(1)
 
-    if not raw_data_path.exists():
-        print(f"❌ Error: 파일을 찾을 수 없습니다: {raw_data_path}")
-        return
-
-    raw_df = loader.load_csv(raw_data_path)
+    # 학습 데이터 검증
+    is_ok, missing = DataLoader.validate_df(raw_df, mode = 'train')
+    if not is_ok:
+        print(f"🛑 [Stage 04] 학습 데이터 검증 실패! 누락 컬럼: {missing}")
+        sys.exit(1)
+    print("\n✅ [Stage 04] 학습 데이터 검증 완료.")
 
     # 훈련 대상 모델 결정
     if "all" in args.model:
@@ -126,7 +134,7 @@ def main():
             print(f"⚠️ {m_name} 훈련 중 오류 발생: {e}")
             continue
 
-    print("\n" + "✨" * 3 + " 모든 훈련 프로세스가 종료되었습니다 " + "✨" * 3)
+    print("\n" + "✨" * 3 + "[Stage 04] 모든 훈련 프로세스가 종료되었습니다 " + "✨" * 3)
 
 
 if __name__ == "__main__":

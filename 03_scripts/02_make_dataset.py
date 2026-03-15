@@ -45,8 +45,7 @@ def main():
         return
 
     # 4. 데이터 로드
-    loader = DataLoader()
-    raw_df = loader.load_csv(raw_path)
+    raw_df = DataLoader.load_csv(raw_path)
 
     # 데이터 정제
     cleaned_df = DataProcessor().clean_user_data(raw_df)
@@ -55,7 +54,7 @@ def main():
     train_df, test_df = train_test_split(
         cleaned_df,
         test_size=args.test_size,
-        stratify=cleaned_df['is_active'] if 'is_active' in cleaned_df.columns else None,
+        stratify=cleaned_df['is_active'],
         random_state=42,
         shuffle=True
     )
@@ -66,7 +65,7 @@ def main():
     train_df.to_csv(train_out, index=False)
     test_df.to_csv(test_out, index=False)
 
-    print(f"✨ 작업 완료: '{args.filename}' -> 분리 및 저장 성공")
+    print(f"✅ [Stage 02] 작업 완료: '{args.filename}' -> 분리 및 저장 성공")
     print(f"   - 훈련용: {train_out.name} ({len(train_df)} rows)")
     print(f"   - 테스트용: {test_out.name} ({len(test_df)} rows)")
 
