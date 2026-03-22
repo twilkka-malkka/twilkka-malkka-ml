@@ -31,7 +31,11 @@ python 03_scripts/01_validate_raw.py [filename]
 
 ## Step 2. user data 정제
 ### 목적
-Raw 데이터를 정제하고 train set과 test set으로 분할하여 저장합니다.
+Raw 데이터를 정제하고 모델 학습 데이터셋과 성능 평가 데이터셋으로 분할하여 저장합니다.  
+이후 script는 모두 학습 데이터셋만을 사용하며, `04_train.py`에서 사용하는 train/test set 역시 학습 데이터셋을 분할하여 사용합니다.
+성능 평가 데이터셋은 모델 학습 과정에 사용되지 않으며 모델의 최종 성능을 평가하고, streamlit 페이지에서 load하는 용도로 사용됩니다.  
+`00_data/00_raw/user_data_to_analysis.csv`파일의 경우 이 스크립트에서 분할 비율을 0.1로 설정하여 얻은 평가 데이터셋에 정답 라벨을 제거한 파일입니다.
+
 ### 명령어
 ```bash
 python 03_scripts/02_make_dataset.py [filename] [-s TEST_SIZE]
@@ -40,7 +44,7 @@ python 03_scripts/02_make_dataset.py [filename] [-s TEST_SIZE]
 | 인자 | 설명                          | 기본값 |
 | :--- |:----------------------------|:----|
 | filename | Raw user data CSV 파일명       | 없음  |
-| -s, --test_size | 테스트 데이터 분할 비율 ($0 < s < 1$) | 0.2 |
+| -s, --test_size | 학습/평가 데이터 분할 비율 ($0 < s < 1$) | 0.2 |
 ### 출력
 `00_data/01_interim/` 내 정제된 user data 파일`[filename]_train.csv`, `[filename]_test.csv` 생성
 
@@ -54,7 +58,7 @@ python 03_scripts/03_build_features.py -o [output] [input]
 ### 인자
 | 인자           | 설명                 | 기본값         |
 |:-------------|:-------------------|:------------|
-| input        | [Step 2]에서 정제된 파일명 | 없음          |
+| input        | [Step 2]에서 정제된 학습 데이터셋 파일명 | 없음          |
 | -o, --output | 출력 csv 파일명         | `input`과 동일 |
 ### 출력
 `00_data/02_processed/` 내 모델 학습 데이터셋 파일`[output].csv` 생성
